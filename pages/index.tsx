@@ -7,7 +7,15 @@ import {
   IRemoteVideoTrack,
   IAgoraRTCClient,
   IRemoteAudioTrack,
+  IMicrophoneAudioTrack,
 } from "agora-rtc-sdk-ng";
+
+import "font-awesome/css/font-awesome.min.css";
+
+import VideocamOffIcon from "@mui/icons-material/VideocamOff";
+import MicIcon from "@mui/icons-material/Mic";
+import MicOffIcon from "@mui/icons-material/MicOff";
+import { VideoCameraBack } from "@mui/icons-material";
 
 type TCreateRoomResponse = {
   room: Room;
@@ -147,9 +155,12 @@ export default function Home() {
   const [input, setInput] = useState("");
   const [themVideo, setThemVideo] = useState<IRemoteVideoTrack>();
   const [myVideo, setMyVideo] = useState<ICameraVideoTrack>();
+  const [myAudio, setAudio] = useState<IMicrophoneAudioTrack>();
   const [themAudio, setThemAudio] = useState<IRemoteAudioTrack>();
   const channelRef = useRef<RtmChannel>();
   const rtcClientRef = useRef<IAgoraRTCClient>();
+  const [isCameraOn, setIsCameraOn] = useState(true);
+  const [isMicOn, setIsMicOn] = useState(true);
 
   function handleNextClick() {
     connectToARoom();
@@ -157,6 +168,28 @@ export default function Home() {
 
   function handleStartChattingClicked() {
     connectToARoom();
+  }
+
+  function toggleCamera() {
+    if (myVideo) {
+      if (isCameraOn) {
+        myVideo.setEnabled(false);
+      } else {
+        myVideo.setEnabled(true);
+      }
+      setIsCameraOn(!isCameraOn);
+    }
+  }
+
+  function toggleMic() {
+    if (myAudio) {
+      if (isMicOn) {
+        myAudio.setEnabled(false);
+      } else {
+        myAudio.setEnabled(true);
+      }
+      setIsMicOn(!isMicOn);
+    }
   }
 
   async function handleSubmitMessage(e: React.FormEvent) {
@@ -233,6 +266,7 @@ export default function Home() {
         rtcToken
       );
       rtcClientRef.current = client;
+      setAudio(tracks[0]);
     }
   }
 
@@ -265,6 +299,12 @@ export default function Home() {
                       videoTrack={myVideo}
                     />
                   )}
+                  {/* <button onClick={toggleCamera}>
+                    {isCameraOn ? <VideoCameraBack /> : <VideocamOffIcon />}
+                  </button>
+                  <button onClick={toggleMic}>
+                    {isMicOn ? <MicIcon /> : <MicOffIcon />}
+                  </button> */}
                 </div>
                 <div className="video-stream">
                   {themVideo && (
@@ -273,6 +313,12 @@ export default function Home() {
                       videoTrack={themVideo}
                     />
                   )}
+                  {/* <button onClick={toggleCamera}>
+                    {isCameraOn ? "Turn Off Camera" : "Turn On Camera"}
+                  </button>
+                  <button onClick={toggleMic}>
+                    {isMicOn ? "Turn Off Mic" : "Turn On Mic"}
+                  </button> */}
                 </div>
               </div>
 
